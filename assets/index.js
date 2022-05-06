@@ -1,56 +1,57 @@
-let id = ''
+let keyID = 'no key'
 
 class Game {
 
     constructor(){
-        this.start()
     }
 
-    start(){
-        fetch(`http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1 `)
+    getkey(){
+        fetch(`http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
         .then(res => res.json())
         .then(data => {
-
-                id = data.deck_id
-
-                fetch(`http://deckofcardsapi.com/api/deck/${id}/draw/?count=4`)
-                .then(res => res.json())
-                .then(data => {
-                    let ul1 = document.querySelector('.ulPlayerCards1')
-                    let ul2 = document.querySelector('.ulPlayerCards2')
-
-                    let firstHalf = data.cards.slice(0, 2)
-                    let secondHalf = data.cards.slice(2)
-
-                    console.log(firstHalf, secondHalf)
-
-                    firstHalf.forEach(card => {
-                        let li = document.createElement('li')
-                        li.setAttribute('value', isNaN(card.value) ? this.convertCardValue(card.value) + card.suit[0] : card.value + card.suit[0])
-                        // li.setAttribute('suit', card.suit)
-                        let img = document.createElement('img')
-                        img.src = card.image
-
-                        li.appendChild(img)
-                        ul1.appendChild(li)
-                    })
-                    secondHalf.forEach(card => {
-                        let li = document.createElement('li')
-                        li.setAttribute('value', isNaN(card.value) ? this.convertCardValue(card.value) + card.suit[0] : card.value + card.suit[0])
-                        // li.setAttribute('suit', card.suit)
-                        let img = document.createElement('img')
-                        img.src = card.image
-
-                        li.appendChild(img)
-                        ul2.appendChild(li)
-                    })
-                })
-                .catch(err => console.log(err))
-            })
+            keyID = data.deck_id
+        })
         .catch(err => console.log(err))
     }
 
-    startRiver(){
+    startGame(){
+        this.getPlayerCards()
+        this.getRiverCards()
+    }
+
+    getPlayerCards(){
+
+        fetch(`http://deckofcardsapi.com/api/deck/${keyID}/draw/?count=4`)
+        .then(res => res.json())
+        .then(data => {
+            let ul1 = document.querySelector('.ulPlayerCards1')
+            let ul2 = document.querySelector('.ulPlayerCards2')
+            let firstHalf = data.cards.slice(0, 2)
+            let secondHalf = data.cards.slice(2)
+            console.log(firstHalf, secondHalf)
+            firstHalf.forEach(card => {
+                let li = document.createElement('li')
+                li.setAttribute('value', isNaN(card.value) ? this.convertCardValue(card.value) + card.suit[0] : card.value + card.suit[0])
+                // li.setAttribute('suit', card.suit)
+                let img = document.createElement('img')
+                img.src = card.image
+                li.appendChild(img)
+                ul1.appendChild(li)
+            })
+            secondHalf.forEach(card => {
+                let li = document.createElement('li')
+                li.setAttribute('value', isNaN(card.value) ? this.convertCardValue(card.value) + card.suit[0] : card.value + card.suit[0])
+                // li.setAttribute('suit', card.suit)
+                let img = document.createElement('img')
+                img.src = card.image
+                li.appendChild(img)
+                ul2.appendChild(li)
+            })
+        })
+        .catch(err => console.log(err))
+    }
+
+    getRiverCards(){
 
         let cardsInRiver = document.querySelector('.ulRiverCards').children.length
         
@@ -65,7 +66,7 @@ class Game {
             return 
         }
 
-        fetch(`http://deckofcardsapi.com/api/deck/${id}/draw/?count=5`)
+        fetch(`http://deckofcardsapi.com/api/deck/${keyID}/draw/?count=5`)
             .then(res => res.json())
             .then(data => {
                 console.log(data.cards)
@@ -153,7 +154,7 @@ class Game {
     }
 
     shuffle() {
-        fetch(`http://deckofcardsapi.com/api/deck/${id}/shuffle/`)
+        fetch(`http://deckofcardsapi.com/api/deck/${keyID}/shuffle/`)
         .then(res => res.json())
         .then(data => {
                 console.log(data)
@@ -170,7 +171,7 @@ class Game {
             playerCards.removeChild(playerCards.firstChild)
         }
 
-        this.start()
+        this.getPlayerCards()
     }
 
     convertCardValue(value){
@@ -188,8 +189,7 @@ class Game {
 }
 
 let game = new Game()
+game.getkey()
 
-// game.start()
-
-document.querySelector('.start').addEventListener('click', () => {game.startRiver()})
+document.querySelector('.start').addEventListener('click', () => {game.startGame()})
 document.querySelector('.retry').addEventListener('click', () => {game.shuffle()})

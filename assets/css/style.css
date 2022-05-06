@@ -93,6 +93,14 @@ header > h1 {
      padding: 15px;
 }
 
+/* Timer */
+
+.timer {
+     height: 100px;
+     width: 900px;
+     background-color: black;
+}
+
 
 /* Player Cards */
 
