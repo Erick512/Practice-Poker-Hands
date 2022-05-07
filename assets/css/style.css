@@ -41,11 +41,47 @@ footer {
 header {
      display: flex;
      justify-content: center;
-     align-items: center;
-     height: 200px;
+     align-items:center;
+     height: 150px;
+     width: 900px;
+     margin: auto;
+     margin-bottom: 50px;
+     border-bottom: 2px solid gray;
 }
 
+/* inactive */
+
+.inactive{
+     pointer-events: none;
+}
+
+/* Hidden */
+
+.hidden {
+     display: none;
+}
+
+/******************************************
+/* ADDITIONAL STYLES
+/*******************************************/
+
+/* show stats Button */
+
+.showStats {
+     position: absolute;
+     color: white;
+     font-size: 50px;
+     right: 85%;
+}
+
+.showStats:hover {
+     color: gray;
+}
+
+
+/*  Table */
 .table {
+     position: relative;
      width: 900px;
      height: 700px;
      margin: auto;
@@ -54,9 +90,100 @@ header {
      border-radius: 60px;
 }
 
-/******************************************
-/* ADDITIONAL STYLES
-/*******************************************/
+/* stats screen */
+
+.stats {
+     position: absolute;
+     display: flex;
+     z-index: 1;
+     height: 500px;
+     width: 600px;
+     left: 50%;
+     top: 50%;
+     transform: translate(-50%, -50%);
+     background-color: rgb(0, 0, 0, 85%);
+     border-radius: 60px;
+     justify-content: center;
+     align-items: center;
+     pointer-events: all;
+}
+
+.stats.hidden {
+     display: none;
+}
+
+.xButton > button {
+     position: absolute;
+     top: 20px;
+     right: 20px;
+     height: 50px;
+     width: 50px;
+     border-radius: 50%;
+     border: none;
+     background-color: white;
+     font-size: 30px;
+}
+
+
+.statsContent {
+     font-size: 30px;
+     width: 500px;
+     height: 400px;
+     justify-content: space-between;
+}
+
+.statsContent > h2 {
+     padding-bottom: 30px;
+}
+
+.xButton > button:hover {
+     background-color: rgb(148, 148, 148);
+}
+
+/* Settings */
+
+.settings {
+     margin-top: 150px;
+}
+
+div.settings > h2{
+     text-align: center;
+     padding: 10px 0;
+     border-bottom: 1px solid gray;
+}
+
+.options {
+     display: flex;
+     justify-content: space-between;
+     padding-top: 20px;
+}
+
+label {
+     font-size: 20px;
+}
+
+select {
+     background-color: black;
+     color: white;
+     border: 1px solid white;
+}
+
+select:focus {
+     outline: none;
+}
+
+.options > button {
+     background-color: rgb(169, 3, 3);
+     color: white;
+     font-weight: 700;
+     padding: 10px;
+     border-radius: 10px;
+     border: none;
+}
+
+.options > button:hover {
+     background-color: rgb(90, 0, 0);
+}
 
 
 /* Heading */
@@ -68,18 +195,13 @@ header > h1 {
 /* River Cards */
 
 .riverCards {
-     position: absolute;
-     top: 250px;
+     display: flex;
+     height: 250px;
      display: flex;
      width: 900px;
      justify-content: center;
+     align-items: center;
 }
-
-/* .riverCards > img {
-     position: absolute;
-     left: 50px;
-     width: 120px;
-} */
 
 .riverCards > ul {
      display: flex;
@@ -87,29 +209,51 @@ header > h1 {
 
 .riverCards li > img {
      width: 110px;
+     height: 153;
 }
 
 .riverCards li {
+     height: 183px;
      padding: 15px;
 }
 
 /* Timer */
 
-.timer {
+.middleSection {
+     display: flex;
      height: 100px;
-     width: 900px;
-     background-color: black;
+     width: 500px;
+     margin: auto;
+     align-items: center;
+     justify-content: center;
+     font-size: 60px;
+}
+
+.streak{
+     position: absolute;
+     left: 10%;
+     font-size: 30px;
+}
+
+.runningOut {
+     color: rgba(118, 0, 0, 0.81);
+     font-size: 100px;
+     transition: color 3s, font-size 3s;
 }
 
 
 /* Player Cards */
 
 .playerCards {
-     position: absolute;
-     top: 570px;
+     margin-top: 80px;
      display: flex;
      width: 900px;
      justify-content: space-evenly;
+}
+
+.wrong {
+     border: 5px solid red;
+     border-radius: 20px;
 }
 
 .firstHalf:hover,

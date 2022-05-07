@@ -1,8 +1,19 @@
 let keyID = 'no key'
 
+let streak = 0
+
+if(!localStorage.getItem('streak')){
+    localStorage.setItem('streak', streak)
+}
+
+// document.querySelector('.hStreak').innerHTML = `Highest Score: ${localStorage.getItem('streak')}`
+document.querySelector('.hStreak').innerHTML = `${localStorage.getItem('streak')}`
+
 class Game {
 
     constructor(){
+        this.streak = 0
+        this.timer
     }
 
     getkey(){
@@ -17,6 +28,37 @@ class Game {
     startGame(){
         this.getPlayerCards()
         this.getRiverCards()
+        document.querySelector('.start').classList.add('hidden')
+        
+        this.startTimer()
+    }
+
+    startTimer(){
+
+        let timLeft = 5
+        this.timer = setInterval( () => {
+            if(timLeft <= 0){
+                clearInterval(this.timer)
+                this.gameOver()
+            }
+            
+            if(timLeft < 4) {
+                document.querySelector('.timer').classList.add('runningOut')
+            } else {
+                document.querySelector('.timer').classList.remove('runningOut')
+            }
+
+            document.querySelector('.timer').innerHTML = timLeft
+            timLeft -= 1
+        } , 1000)
+    }
+
+    stopTimer(){
+        clearInterval(this.timer)
+    }
+
+    resetTimer(){
+
     }
 
     getPlayerCards(){
@@ -53,18 +95,18 @@ class Game {
 
     getRiverCards(){
 
-        let cardsInRiver = document.querySelector('.ulRiverCards').children.length
+        // let cardsInRiver = document.querySelector('.ulRiverCards').children.length
         
-        if(cardsInRiver > 4) {
+        // if(cardsInRiver > 4) {
             
-            // let riverHand = this.getHandDetails('.ulRiverCards')
-            let playerHand = this.getHandDetails('.ulPlayerCards')
+        //     // let riverHand = this.getHandDetails('.ulRiverCards')
+        //     let playerHand = this.getHandDetails('.ulPlayerCards')
 
-            console.log(playerHand)
+        //     console.log(playerHand)
 
-            // console.log(this.compareHands(riverHand, playerHand))
-            return 
-        }
+        //     // console.log(this.compareHands(riverHand, playerHand))
+        //     return 
+        // }
 
         fetch(`http://deckofcardsapi.com/api/deck/${keyID}/draw/?count=5`)
             .then(res => res.json())
@@ -87,25 +129,57 @@ class Game {
 
     getHandDetails(querySelector){
 
+        // get selected cards
         let htmlCollection = document.querySelector(querySelector).children
-        let htmlArr = [...htmlCollection]
+        let selectedCardsArr = [...htmlCollection]
 
+        // get river cards
         let riverhtmlCollection = document.querySelector('.ulRiverCards').children
-        let riverhtmlArr = [...riverhtmlCollection]
+        let riverCards = [...riverhtmlCollection]
 
-        let cards = htmlArr.map(x => x = x.getAttribute('value')).concat(riverhtmlArr.map(x => x = x.getAttribute('value')))
-        console.log(cards)
+        // get unselectedCards
+        let unselectedCardsArr
+        if(querySelector == '.ulPlayerCards1'){
+            let htmlCollection = document.querySelector('.ulPlayerCards2').children
+            unselectedCardsArr = [...htmlCollection]
+        } else {
+            let htmlCollection = document.querySelector('.ulPlayerCards1').children
+            unselectedCardsArr = [...htmlCollection]
+        }
 
-        let rank = this.checkRank(cards)
-        
-        return rank
+        //combine unselected+river cards
+        let againstCards = unselectedCardsArr.map(x => x = x.getAttribute('value')).concat(riverCards.map(x => x = x.getAttribute('value')))
+        console.log(againstCards)
+
+        // combine selected+river cards
+        let selectedCards = selectedCardsArr.map(x => x = x.getAttribute('value')).concat(riverCards.map(x => x = x.getAttribute('value')))
+        console.log(selectedCards)
+
+        let selectedCardsRank = this.checkRank(selectedCards)
+        let unselectedCardsRank = this.checkRank(againstCards)
+
+        console.log(`your rank ${selectedCardsRank.rank}, other set rank ${unselectedCardsRank.rank}`)
+
+        let didWin = this.compareHands(selectedCardsRank, unselectedCardsRank)
+
+        if(didWin){
+            clearInterval(this.timer)
+            this.streak++
+            document.querySelector('.streak').innerHTML = `Streak: ${this.streak}`
+            this.nextRound()
+        } else {
+            clearInterval(this.timer)
+            document.querySelector(querySelector).classList.add('wrong')
+            document.querySelector('.timer').innerHTML = 'Game Over'
+            document.querySelector('.streak').innerHTML = `Streak: ${this.streak}`
+            this.gameOver()
+        }
     }
 
     checkRank(cards){
 
         const order = "23456789TJQKA"
         const faces = cards.map(a => String.fromCharCode([77 - order.indexOf(a[0])])).sort()
-        console.log(faces)
         const suits = cards.map(a => a[1]).sort()
         const counts = faces.reduce(count, {})
         const duplicates = Object.values(counts).reduce(count, {})
@@ -138,22 +212,24 @@ class Game {
         }
     }
 
+    // fix compare to get better scoring system!
+
     compareHands(d1, d2){
         // let d1 = this.getHandDetails(h1)
         // let d2 = this.getHandDetails(h2)
         if (d1.rank === d2.rank) {
         if (d1.value < d2.value) {
-            return "WIN"
+            return true
         } else if (d1.value > d2.value) {
-            return "LOSE"
+            return false
         } else {
-            return "DRAW"
+            return true
         }
         }
-        return d1.rank < d2.rank ? "WIN" : "LOSE"
+        return d1.rank < d2.rank ? true : false
     }
 
-    shuffle() {
+    nextRound(){
         fetch(`http://deckofcardsapi.com/api/deck/${keyID}/shuffle/`)
         .then(res => res.json())
         .then(data => {
@@ -162,16 +238,79 @@ class Game {
         .catch(err => console.log(err))
 
         let riverCards = document.querySelector('.ulRiverCards')
-        let playerCards = document.querySelector('.ulPlayerCards')
+        let playerCards1 = document.querySelector('.ulPlayerCards1')
+        let playerCards2 = document.querySelector('.ulPlayerCards2')
 
         while(riverCards.firstChild){   
             riverCards.removeChild(riverCards.firstChild)
         }
-        while(playerCards.firstChild){   
-            playerCards.removeChild(playerCards.firstChild)
+        while(playerCards1.firstChild){   
+            playerCards1.removeChild(playerCards1.firstChild)
+        }
+        while(playerCards2.firstChild){   
+            playerCards2.removeChild(playerCards2.firstChild)
         }
 
-        this.getPlayerCards()
+        this.startGame()
+    }
+
+    retry() {
+        fetch(`http://deckofcardsapi.com/api/deck/${keyID}/shuffle/`)
+        .then(res => res.json())
+        .then(data => {
+                console.log(data)
+            })
+        .catch(err => console.log(err))
+
+        let riverCards = document.querySelector('.ulRiverCards')
+        let playerCards1 = document.querySelector('.ulPlayerCards1')
+        let playerCards2 = document.querySelector('.ulPlayerCards2')
+
+        while(riverCards.firstChild){   
+            riverCards.removeChild(riverCards.firstChild)
+        }
+        while(playerCards1.firstChild){   
+            playerCards1.removeChild(playerCards1.firstChild)
+        }
+        while(playerCards2.firstChild){   
+            playerCards2.removeChild(playerCards2.firstChild)
+        }
+
+        this.streak = 0
+        document.querySelector('.streak').innerHTML = `${this.streak}`
+
+
+        document.querySelector('.newHigh').classList.add('hidden')
+        document.querySelector('.currentStreak').classList.remove('hidden')
+
+        document.querySelector('.ulPlayerCards1').classList.remove('wrong')
+        document.querySelector('.ulPlayerCards2').classList.remove('wrong')
+        document.querySelector('.timer').innerHTML = ''
+        document.querySelector('.stats').classList.add('hidden')
+        document.querySelector('.table').classList.remove('inactive')
+        clearInterval(this.timer)
+        this.startGame()
+    
+    }
+
+    gameOver(){
+
+        if(localStorage.getItem('streak') < this.streak){
+            
+            console.log(`local ${+localStorage.getItem('streak')}, current ${this.streak}`)
+            localStorage.setItem('streak', this.streak)
+
+            document.querySelector('.newHigh').innerHTML = `New High Score!`
+            document.querySelector('.hStreak').innerHTML = `${this.streak}`
+
+            document.querySelector('.newHigh').classList.remove('hidden')
+            document.querySelector('.currentStreak').classList.add('hidden')
+        }
+
+        document.querySelector('.currentStreak').innerHTML = `${this.streak}`
+        document.querySelector('.table').classList.add('inactive')
+        // document.querySelector('.start').classList.remove('inactive')
+        document.querySelector('.stats').classList.remove('hidden')
     }
 
     convertCardValue(value){
@@ -191,5 +330,16 @@ class Game {
 let game = new Game()
 game.getkey()
 
+document.querySelector('.showStats').addEventListener('click', () => {showStats()})
 document.querySelector('.start').addEventListener('click', () => {game.startGame()})
-document.querySelector('.retry').addEventListener('click', () => {game.shuffle()})
+document.querySelector('.retry').addEventListener('click', () => {game.retry()})
+document.querySelector('.ulPlayerCards1').addEventListener('click', () => {game.getHandDetails('.ulPlayerCards1')})
+document.querySelector('.ulPlayerCards2').addEventListener('click', () => {game.getHandDetails('.ulPlayerCards2')})
+document.querySelector('.statsBtn').addEventListener('click', () => {hideStats()})
+
+function hideStats(){
+    document.querySelector('.stats').classList.add('hidden')
+}
+function showStats(){
+    document.querySelector('.stats').classList.remove('hidden')
+}

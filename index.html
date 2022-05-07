@@ -12,17 +12,49 @@
     <body>
 
         <header>
-            <h1>Practice Poker</h1>
+            <h1>Play Poker Hands</h1>
+            <span class="fa-solid fa-bars showStats"></span>
         </header>
 
         <section class="table">
+
+            <section class="stats hidden">
+                <div class="xButton">
+                    <button class="statsBtn">X</button>
+                </div>
+
+                <div class="statsContent">
+                    <h2>Last streak: <span class="currentStreak"></span></h2>
+                    <h2 class="newHigh hidden">New High Score!</h2>
+                    <h2>Highest Score: <span class="hStreak"></span></h2>
+
+                    <div class="settings">
+                        <h2>Settings</h2>
+
+                        <section class="options">
+                            <div>
+                                <label for="time-select">Timer</label>
+                                <select name="time" id="time-select">
+                                    <option value="5">5 seconds</option>
+                                    <option value="5">1 seconds</option>
+                                    <option value="5">10 seconds</option>
+                                </select>
+                            </div>
+
+                            <button>Reset High Score</button>
+                        </section>
+
+                    </div>
+                </div>
+            </section>
 
             <section class="riverCards">
                 <ul class="ulRiverCards"></ul>
             </section>
 
-            <section>
-                <span class="timer">Timer: </span>
+            <section class="middleSection">
+                <span class="streak"></span>
+                <span class="timer"></span>
             </section>
 
             <section class="playerCards">
@@ -41,5 +73,6 @@
         </section>
         
         <script src="assets/index.js"></script>
+        <script src="https://kit.fontawesome.com/d5ce7117b5.js" crossorigin="anonymous"></script>
     </body>
 </html>
