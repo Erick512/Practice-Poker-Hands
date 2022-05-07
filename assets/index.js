@@ -14,6 +14,7 @@ class Game {
     constructor(){
         this.streak = 0
         this.timer
+        // this.timeLeft = 0
     }
 
     getkey(){
@@ -26,6 +27,12 @@ class Game {
     }
 
     startGame(){
+
+        // let time = document.querySelector('#time-select').value
+        // console.log(time)
+
+        this.timeLeft = 5
+
         this.getPlayerCards()
         this.getRiverCards()
         document.querySelector('.start').classList.add('hidden')
@@ -35,30 +42,27 @@ class Game {
 
     startTimer(){
 
-        let timLeft = 5
+        let timeLeft = 5
+
         this.timer = setInterval( () => {
-            if(timLeft <= 0){
+            if(timeLeft <= 0){
                 clearInterval(this.timer)
                 this.gameOver()
             }
             
-            if(timLeft < 4) {
+            if(timeLeft < 4) {
                 document.querySelector('.timer').classList.add('runningOut')
             } else {
                 document.querySelector('.timer').classList.remove('runningOut')
             }
 
-            document.querySelector('.timer').innerHTML = timLeft
-            timLeft -= 1
+            document.querySelector('.timer').innerHTML = timeLeft
+            timeLeft -= 1
         } , 1000)
     }
 
     stopTimer(){
         clearInterval(this.timer)
-    }
-
-    resetTimer(){
-
     }
 
     getPlayerCards(){
@@ -165,13 +169,13 @@ class Game {
         if(didWin){
             clearInterval(this.timer)
             this.streak++
-            document.querySelector('.streak').innerHTML = `Streak: ${this.streak}`
+            document.querySelector('.streak').innerHTML = `Score: ${this.streak}`
             this.nextRound()
         } else {
             clearInterval(this.timer)
             document.querySelector(querySelector).classList.add('wrong')
             document.querySelector('.timer').innerHTML = 'Game Over'
-            document.querySelector('.streak').innerHTML = `Streak: ${this.streak}`
+            document.querySelector('.streak').innerHTML = `Score: ${this.streak}`
             this.gameOver()
         }
     }
@@ -277,11 +281,11 @@ class Game {
         }
 
         this.streak = 0
-        document.querySelector('.streak').innerHTML = `${this.streak}`
+        document.querySelector('.streak').innerHTML = `Score: ${this.streak}`
 
 
         document.querySelector('.newHigh').classList.add('hidden')
-        document.querySelector('.currentStreak').classList.remove('hidden')
+        document.querySelector('.cStreak').classList.remove('hidden')
 
         document.querySelector('.ulPlayerCards1').classList.remove('wrong')
         document.querySelector('.ulPlayerCards2').classList.remove('wrong')
@@ -304,7 +308,7 @@ class Game {
             document.querySelector('.hStreak').innerHTML = `${this.streak}`
 
             document.querySelector('.newHigh').classList.remove('hidden')
-            document.querySelector('.currentStreak').classList.add('hidden')
+            document.querySelector('.cStreak').classList.add('hidden')
         }
 
         document.querySelector('.currentStreak').innerHTML = `${this.streak}`
