@@ -14,11 +14,11 @@ class Game {
     constructor(){
         this.streak = 0
         this.timer
-        // this.timeLeft = 0
+        this.timeLeft = 0
     }
 
     getkey(){
-        fetch(`http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
+        fetch(`https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
         .then(res => res.json())
         .then(data => {
             keyID = data.deck_id
@@ -28,10 +28,10 @@ class Game {
 
     startGame(){
 
-        // let time = document.querySelector('#time-select').value
-        // console.log(time)
+        this.timeLeft = +document.querySelector('#time-select').value
+        console.log(this.timeLeft)
 
-        this.timeLeft = 5
+        // this.timeLeft = 5
 
         this.getPlayerCards()
         this.getRiverCards()
@@ -42,22 +42,22 @@ class Game {
 
     startTimer(){
 
-        let timeLeft = 5
+        // let timeLeft = 5
 
         this.timer = setInterval( () => {
-            if(timeLeft <= 0){
+            if(this.timeLeft <= 0){
                 clearInterval(this.timer)
                 this.gameOver()
             }
             
-            if(timeLeft < 4) {
+            if(this.timeLeft < 4) {
                 document.querySelector('.timer').classList.add('runningOut')
             } else {
                 document.querySelector('.timer').classList.remove('runningOut')
             }
 
-            document.querySelector('.timer').innerHTML = timeLeft
-            timeLeft -= 1
+            document.querySelector('.timer').innerHTML = this.timeLeft
+            this.timeLeft -= 1
         } , 1000)
     }
 
@@ -67,7 +67,7 @@ class Game {
 
     getPlayerCards(){
 
-        fetch(`http://deckofcardsapi.com/api/deck/${keyID}/draw/?count=4`)
+        fetch(`https://www.deckofcardsapi.com/api/deck/${keyID}/draw/?count=4`)
         .then(res => res.json())
         .then(data => {
             let ul1 = document.querySelector('.ulPlayerCards1')
@@ -112,7 +112,7 @@ class Game {
         //     return 
         // }
 
-        fetch(`http://deckofcardsapi.com/api/deck/${keyID}/draw/?count=5`)
+        fetch(`https://www.deckofcardsapi.com/api/deck/${keyID}/draw/?count=5`)
             .then(res => res.json())
             .then(data => {
                 console.log(data.cards)
@@ -234,7 +234,7 @@ class Game {
     }
 
     nextRound(){
-        fetch(`http://deckofcardsapi.com/api/deck/${keyID}/shuffle/`)
+        fetch(`https://www.deckofcardsapi.com/api/deck/${keyID}/shuffle/`)
         .then(res => res.json())
         .then(data => {
                 console.log(data)
@@ -259,7 +259,7 @@ class Game {
     }
 
     retry() {
-        fetch(`http://deckofcardsapi.com/api/deck/${keyID}/shuffle/`)
+        fetch(`https://www.deckofcardsapi.com/api/deck/${keyID}/shuffle/`)
         .then(res => res.json())
         .then(data => {
                 console.log(data)
@@ -340,10 +340,52 @@ document.querySelector('.retry').addEventListener('click', () => {game.retry()})
 document.querySelector('.ulPlayerCards1').addEventListener('click', () => {game.getHandDetails('.ulPlayerCards1')})
 document.querySelector('.ulPlayerCards2').addEventListener('click', () => {game.getHandDetails('.ulPlayerCards2')})
 document.querySelector('.statsBtn').addEventListener('click', () => {hideStats()})
+document.querySelector('.resetBtn').addEventListener('click', () => {resetHighScore()})
+
+
+document.querySelector('.fa-question').addEventListener('click', showQuestion)
+document.querySelector('.questionXBtn').addEventListener('click', closeQuestion)
+document.querySelector('.how').addEventListener('click', showHow)
+document.querySelector('.rank').addEventListener('click', showRank)
 
 function hideStats(){
     document.querySelector('.stats').classList.add('hidden')
 }
 function showStats(){
     document.querySelector('.stats').classList.remove('hidden')
+}
+function resetHighScore(){
+    localStorage.setItem('streak', 0)
+    document.querySelector('.hStreak').innerHTML = localStorage.getItem('streak')
+}
+
+
+
+function showQuestion() {
+    document.querySelector('.stats.question').classList.remove('hidden')
+}
+function closeQuestion() {
+    document.querySelector('.stats.question').classList.add('hidden')
+}
+
+function showHow() {
+    console.log('in how')
+    document.querySelector('.howShow').classList.remove('hidden')
+    document.querySelector('.des').classList.remove('hidden')
+    document.querySelector('.how').classList.add('select')
+
+    document.querySelector('.rankShow').classList.add('hidden')
+    document.querySelector('.rank').classList.remove('select')
+
+}
+
+function showRank(){
+    console.log('in rank')
+
+    document.querySelector('.howShow').classList.add('hidden')
+    document.querySelector('.des').classList.add('hidden')
+    document.querySelector('.how').classList.remove('select')
+
+    document.querySelector('.rankShow').classList.remove('hidden')
+    document.querySelector('.rank').classList.add('select')
 }
