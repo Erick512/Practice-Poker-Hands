@@ -332,7 +332,7 @@ header > h1 {
 
 .runningOut {
      color: rgba(118, 0, 0, 0.81);
-     font-size: 7rem;
+     font-size: 4.5rem;
      transition: color 3s, font-size 3s;
 }
 
@@ -555,5 +555,7 @@ and (max-width: 480px)
      button.questionXBtn:hover {
           background-color: white;
      }
-     
+     .runningOut {
+          font-size: 3rem;
+     }
 }
